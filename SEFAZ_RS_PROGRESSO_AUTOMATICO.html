@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>⚖️ MISSÃO SEFAZ-RS — André Jourdan</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06080f;
+  --s1: #0c1020;
+  --s2: #121828;
+  --s3: #1a2236;
+  --border: #1e2d48;
+  --accent: #f0a500;
+  --accent2: #e84040;
+  --green: #00d68f;
+  --blue: #0099ff;
+  --purple: #9b59b6;
+  --text: #dde3f0;
+  --muted: #4e6080;
+  --r: 14px;
+  --font-head: 'Bebas Neue', Impact, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { font-family: var(--font-body); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; overscroll-behavior: none; }
+
+.header {
+  background: linear-gradient(135deg, #080e1e 0%, #0d1830 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px 12px;
+  position: sticky; top: 0; z-index: 100;
+}
+.header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.logo { font-family: var(--font-head); font-size: 24px; color: var(--accent); letter-spacing: 2px; }
+.logo span { color: #fff; }
+.header-sub { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+.stats-bar { display: flex; gap: 8px; }
+.stat-chip { flex: 1; display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; padding: 7px 4px; }
+.stat-chip .val { font-family: var(--font-head); font-size: 22px; line-height: 1; }
+.stat-chip .lbl { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; margin-top: 2px; text-align: center; }
+.val-gold { color: var(--accent); }
+.val-green { color: var(--green); }
+.val-blue { color: var(--blue); }
+
+.xp-bar-wrap { background: var(--border); height: 3px; border-radius: 2px; margin-top: 8px; }
+.xp-bar { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), #ffcc44); transition: width 0.6s ease; }
+
+.tabs { display: flex; background: var(--s1); border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { flex: 1; min-width: 64px; padding: 11px 6px; font-family: var(--font-head); font-size: 13px; letter-spacing: 1px; color: var(--muted); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; transition: all 0.2s; text-align: center; white-space: nowrap; }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-icon { font-size: 15px; display: block; margin-bottom: 2px; }
+
+.content { padding: 14px 12px 90px; max-width: 600px; margin: 0 auto; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+.card { background: var(--s1); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; margin-bottom: 12px; }
+.card-title { font-family: var(--font-head); font-size: 18px; letter-spacing: 1px; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+/* POMODORO */
+.pomo-mode-btns { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+.mode-btn { padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--s2); color: var(--muted); transition: all 0.2s; }
+.mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+.ring-wrap { position: relative; width: 200px; height: 200px; margin: 0 auto 16px; }
+.ring-wrap svg { width: 200px; height: 200px; transform: rotate(-90deg); }
+circle.track { fill: none; stroke: var(--border); stroke-width: 10; }
+circle.prog { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.ring-inner { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+.ring-time { font-family: var(--font-head); font-size: 56px; color: var(--text); line-height: 1; }
+.ring-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.pomo-container { text-align: center; }
+
+.pomo-session-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; }
+.pomo-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--border); transition: background 0.3s; }
+.pomo-dot.done { background: var(--accent); }
+.pomo-dot.current { background: var(--green); box-shadow: 0 0 8px var(--green); }
+
+.pomo-controls { display: flex; gap: 10px; justify-content: center; margin-bottom: 14px; }
+.btn { padding: 13px 22px; border-radius: 10px; font-family: var(--font-head); font-size: 18px; letter-spacing: 1px; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-start { background: var(--accent); color: #000; }
+.btn-start:active { transform: scale(0.96); }
+.btn-reset { background: var(--s3); color: var(--text); border: 1px solid var(--border); }
+.btn-skip { background: var(--s2); color: var(--muted); border: 1px solid var(--border); font-size: 14px; padding: 13px 14px; }
+
+.subject-select-wrap { margin-top: 8px; }
+.subject-select-wrap label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; }
+select.subj-sel { width: 100%; padding: 10px 12px; background: var(--s2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; font-size: 14px; font-family: var(--font-body); appearance: none; }
+
+.log-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: var(--s2); border-radius: 8px; margin-bottom: 4px; font-size: 13px; }
+.log-time { color: var(--muted); font-size: 11px; }
+
+/* MISSIONS */
+.progress-bar-wrap { background: var(--border); height: 6px; border-radius: 3px; margin-bottom: 14px; }
+.progress-bar { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--green), var(--blue)); transition: width 0.5s; }
+
+.mission-item { display: flex; align-items: center; gap: 12px; padding: 13px 12px; border-radius: 10px; background: var(--s2); border: 1px solid var(--border); margin-bottom: 8px; cursor: pointer; transition: all 0.2s; user-select: none; }
+.mission-item.done { border-color: var(--green); opacity: 0.65; }
+.mission-item.done .mission-name { text-decoration: line-through; color: var(--muted); }
+.mission-check { width: 26px; height: 26px; border-radius: 7px; border: 2px solid var(--muted); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; transition: all 0.2s; }
+.mission-item.done .mission-check { background: var(--green); border-color: var(--green); color: #000; }
+.mission-body { flex: 1; min-width: 0; }
+.mission-name { font-weight: 600; font-size: 14px; }
+.mission-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.mission-xp { font-family: var(--font-head); font-size: 17px; color: var(--accent); flex-shrink: 0; }
+
+.add-mission-btn { width: 100%; padding: 12px; border-radius: 10px; background: var(--s2); border: 1px dashed var(--border); color: var(--muted); font-size: 14px; cursor: pointer; margin-top: 8px; font-family: var(--font-body); transition: all 0.2s; }
+.add-mission-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* CALENDAR */
+.cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.cal-month { font-family: var(--font-head); font-size: 24px; color: var(--accent); }
+.nav-btn { background: var(--s2); border: 1px solid var(--border); color: var(--text); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+.weekdays { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; margin-bottom: 4px; }
+.weekday { text-align: center; font-family: var(--font-head); font-size: 12px; color: var(--muted); padding: 4px 0; }
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
+.cal-cell { aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; cursor: pointer; background: var(--s2); border: 1px solid var(--border); transition: all 0.2s; }
+.cal-cell.empty { background: transparent; border-color: transparent; cursor: default; }
+.cal-cell.today { border-color: var(--accent); color: var(--accent); }
+.cal-cell.studied { background: var(--green); color: #000; border-color: var(--green); }
+.cal-cell.studied.today { background: var(--accent); border-color: var(--accent); color: #000; }
+.cal-cell.future { opacity: 0.2; cursor: default; pointer-events: none; }
+
+.streak-info { display: flex; gap: 10px; margin-top: 14px; }
+.streak-box { flex: 1; text-align: center; padding: 12px; background: var(--s2); border-radius: 10px; border: 1px solid var(--border); }
+.streak-num { font-family: var(--font-head); font-size: 34px; }
+.streak-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* PLAN */
+.plan-intro { background: linear-gradient(135deg, #0d1a36, #111e30); border: 1px solid rgba(240,165,0,0.25); border-radius: var(--r); padding: 16px; margin-bottom: 14px; font-size: 14px; line-height: 1.6; }
+.plan-intro strong { color: var(--accent); }
+
+.subject-card { background: var(--s1); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+.subject-card:hover { border-color: var(--accent); }
+.subject-header { display: flex; align-items: center; justify-content: space-between; }
+.subject-left { display: flex; align-items: center; gap: 10px; }
+.subject-icon { font-size: 22px; }
+.subject-name { font-family: var(--font-head); font-size: 17px; letter-spacing: 1px; }
+.subject-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.subject-right { text-align: right; }
+.subject-pct { font-family: var(--font-head); font-size: 14px; }
+.subject-pct.high { color: var(--accent2); }
+.subject-pct.mid { color: var(--accent); }
+.subject-pct.low { color: var(--green); }
+.subject-progress { margin-top: 10px; }
+.subj-bar-wrap { background: var(--border); height: 5px; border-radius: 3px; overflow: hidden; }
+.subj-bar { height: 100%; border-radius: 3px; transition: width 0.5s; }
+.subject-topics { margin-top: 12px; display: none; }
+.subject-topics.open { display: block; }
+.topic-item { font-size: 12px; color: var(--muted); padding: 4px 0; border-bottom: 1px solid var(--border); display: flex; gap: 6px; }
+.topic-item:last-child { border: none; }
+.topic-bullet { color: var(--accent); flex-shrink: 0; }
+
+/* ROUTINE */
+.routine-block { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.routine-block:last-child { border: none; }
+.routine-time { font-family: var(--font-head); font-size: 15px; color: var(--accent); min-width: 60px; flex-shrink: 0; padding-top: 2px; }
+.routine-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.routine-body { flex: 1; }
+.routine-title { font-weight: 600; font-size: 14px; }
+.routine-desc { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+
+/* APPS */
+.app-item { display: flex; align-items: center; gap: 14px; padding: 14px; background: var(--s2); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 10px; }
+.app-logo { font-size: 30px; width: 44px; text-align: center; }
+.app-body { flex: 1; }
+.app-name { font-weight: 700; font-size: 15px; }
+.app-desc { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+.app-tag { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; margin-top: 6px; }
+.tag-essential { background: rgba(240,165,0,0.15); color: var(--accent); border: 1px solid rgba(240,165,0,0.3); }
+.tag-useful { background: rgba(0,153,255,0.12); color: var(--blue); border: 1px solid rgba(0,153,255,0.25); }
+.tag-optional { background: rgba(155,89,182,0.12); color: var(--purple); border: 1px solid rgba(155,89,182,0.3); }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--s1); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; width: 100%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+.modal-title { font-family: var(--font-head); font-size: 22px; color: var(--accent); margin-bottom: 14px; }
+.modal-input { width: 100%; padding: 12px; border-radius: 8px; background: var(--s2); border: 1px solid var(--border); color: var(--text); font-family: var(--font-body); font-size: 14px; margin-bottom: 10px; }
+.modal-row { display: flex; gap: 10px; }
+.modal-btn { flex: 1; padding: 12px; border-radius: 8px; font-family: var(--font-head); font-size: 16px; cursor: pointer; border: none; }
+.modal-confirm { background: var(--accent); color: #000; }
+.modal-cancel { background: var(--s2); color: var(--text); border: 1px solid var(--border); }
+
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--s2); border: 1px solid var(--border); padding: 12px 20px; border-radius: 30px; font-size: 14px; font-weight: 600; z-index: 300; pointer-events: none; opacity: 0; transition: opacity 0.3s; white-space: nowrap; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="logo">⚖️ MISSÃO <span>SEFAZ-RS</span></div>
+      <div class="header-sub">AUDITOR-FISCAL DA RECEITA ESTADUAL • ANDRÉ JOURDAN</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-family:var(--font-head);font-size:11px;color:var(--muted);letter-spacing:2px">NÍVEL</div>
+      <div id="level-display" style="font-family:var(--font-head);font-size:28px;color:var(--accent);line-height:1">1</div>
+    </div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-chip"><span class="val val-gold" id="hdr-xp">0</span><span class="lbl">XP TOTAL</span></div>
+    <div class="stat-chip"><span class="val val-green" id="hdr-streak">0🔥</span><span class="lbl">SEQUÊNCIA</span></div>
+    <div class="stat-chip"><span class="val val-blue" id="hdr-pomos">0</span><span class="lbl">POMODOROS</span></div>
+    <div class="stat-chip"><span class="val val-gold" id="hdr-days">0</span><span class="lbl">DIAS ESTUD.</span></div>
+  </div>
+  <div class="xp-bar-wrap"><div class="xp-bar" id="xp-bar" style="width:0%"></div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('pomodoro',this)"><span class="tab-icon">⏱️</span>TIMER</button>
+  <button class="tab" onclick="switchTab('missions',this)"><span class="tab-icon">🎯</span>MISSÕES</button>
+  <button class="tab" onclick="switchTab('calendar',this)"><span class="tab-icon">📅</span>CALENDÁRIO</button>
+  <button class="tab" onclick="switchTab('plan',this)"><span class="tab-icon">📚</span>MATÉRIAS</button>
+  <button class="tab" onclick="switchTab('routine',this)"><span class="tab-icon">🌆</span>ROTINA</button>
+  <button class="tab" onclick="switchTab('apps',this)"><span class="tab-icon">📱</span>APPS</button>
+</div>
+
+<div class="content">
+
+  <!-- POMODORO -->
+  <div class="panel active" id="panel-pomodoro">
+    <div class="card">
+      <div class="card-title">⏱️ TIMER DE ESTUDO</div>
+      <div class="pomo-mode-btns">
+        <button class="mode-btn active" onclick="setMode('work25',this)">📖 25 min</button>
+        <button class="mode-btn" onclick="setMode('work50',this)">🔥 50 min</button>
+        <button class="mode-btn" onclick="setMode('short',this)">☕ 5 min</button>
+        <button class="mode-btn" onclick="setMode('long',this)">😴 15 min</button>
+      </div>
+      <div class="pomo-container">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 200 200">
+            <circle class="track" cx="100" cy="100" r="88"/>
+            <circle class="prog" id="ring-circle" cx="100" cy="100" r="88" stroke="var(--accent)" stroke-dasharray="552.9" stroke-dashoffset="0"/>
+          </svg>
+          <div class="ring-inner">
+            <div class="ring-time" id="pomo-time">25:00</div>
+            <div class="ring-label" id="pomo-label">FOCO</div>
+          </div>
+        </div>
+        <div class="pomo-session-dots" id="pomo-dots">
+          <div class="pomo-dot current"></div><div class="pomo-dot"></div><div class="pomo-dot"></div><div class="pomo-dot"></div>
+        </div>
+        <div class="pomo-controls">
+          <button class="btn btn-reset" onclick="resetTimer()">↺</button>
+          <button class="btn btn-start" id="start-btn" onclick="toggleTimer()">INICIAR</button>
+          <button class="btn btn-skip" onclick="skipTimer()">⏭</button>
+        </div>
+        <div class="subject-select-wrap">
+          <label>📘 Matéria deste bloco:</label>
+          <select class="subj-sel" id="current-subject">
+            <option value="">— Selecione —</option>
+            <option value="Auditoria Fiscal/Contábil">🔍 Auditoria Fiscal/Contábil</option>
+            <option value="Contabilidade Geral">📊 Contabilidade Geral</option>
+            <option value="Contabilidade Pública">🏛️ Contabilidade Pública</option>
+            <option value="Língua Portuguesa">📝 Língua Portuguesa</option>
+            <option value="Economia">📈 Economia</option>
+            <option value="Direito Tributário">⚖️ Direito Tributário</option>
+            <option value="Legislação Tributária RS">🗺️ Legislação Tributária RS</option>
+            <option value="Direito Constitucional">🏛️ Direito Constitucional</option>
+            <option value="Direito Administrativo">📂 Direito Administrativo</option>
+            <option value="Matemática Financeira">🧮 Matemática Financeira</option>
+            <option value="Tecnologia da Informação">💻 Tecnologia da Informação</option>
+            <option value="Reforma Tributária">🔄 Reforma Tributária EC 132</option>
+            <option value="Questões/Simulado">🎯 Questões/Simulado Cebraspe</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 SESSÕES DE HOJE</div>
+      <div id="session-log"><div style="color:var(--muted);font-size:13px;text-align:center;padding:12px">Nenhuma sessão ainda. Bora! 💪</div></div>
+    </div>
+  </div>
+
+  <!-- MISSIONS -->
+  <div class="panel" id="panel-missions">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="card-title" style="margin:0">🎯 MISSÕES DO DIA</div>
+        <div id="mission-date" style="font-size:12px;color:var(--muted)"></div>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="mission-progress-bar" style="width:0%"></div></div>
+      <div id="mission-list"></div>
+      <button class="add-mission-btn" onclick="openAddMission()">+ Adicionar missão personalizada</button>
+    </div>
+    <div class="card" id="family-card">
+      <div style="text-align:center;padding:10px">
+        <div style="font-size:32px;margin-bottom:6px">👨‍👩‍👧</div>
+        <div id="family-text" style="font-size:14px;color:var(--muted)">Complete todas as missões para liberar o tempo em família!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="panel" id="panel-calendar">
+    <div class="card">
+      <div class="cal-nav">
+        <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
+        <div class="cal-month" id="cal-month-label"></div>
+        <button class="nav-btn" onclick="changeMonth(1)">▶</button>
+      </div>
+      <div class="weekdays">
+        <div class="weekday">D</div><div class="weekday">S</div><div class="weekday">T</div><div class="weekday">Q</div><div class="weekday">Q</div><div class="weekday">S</div><div class="weekday">S</div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="streak-info">
+        <div class="streak-box"><div class="streak-num" style="color:var(--green)" id="cal-streak">0</div><div class="streak-lbl">🔥 SEQUÊNCIA</div></div>
+        <div class="streak-box"><div class="streak-num" style="color:var(--accent)" id="cal-best">0</div><div class="streak-lbl">🏆 RECORDE</div></div>
+        <div class="streak-box"><div class="streak-num" style="color:var(--blue)" id="cal-total">0</div><div class="streak-lbl">📅 DIAS TOTAL</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">✅ MARCAR HOJE</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Estudou hoje? Registre e mantenha sua sequência.</p>
+      <button class="btn btn-start" style="width:100%;font-size:20px" onclick="markStudiedToday()">✅ ESTUDEI HOJE! (+50 XP)</button>
+    </div>
+  </div>
+
+  <!-- PLAN -->
+  <div class="panel" id="panel-plan">
+    <div class="plan-intro">
+      <strong>📋 SEFAZ-RS — Auditor-Fiscal da Receita Estadual</strong><br>
+      Banca: <strong style="color:var(--accent)">Cebraspe</strong> (referência 2018) | 130 questões • 3 blocos | Nível: Alto<br>
+      Vagas previstas: <strong style="color:var(--accent)">~115 cargos vagos</strong> | Edital: <strong style="color:var(--accent)">1º semestre 2026</strong><br>
+      Salário inicial: <strong style="color:var(--green)">R$ 22.853 – R$ 35.161</strong><br><br>
+      <strong style="color:var(--accent2)">⚠️ Regra eliminatória:</strong> nota mínima exigida em cada bloco — <strong>zerar qualquer disciplina elimina mesmo com nota alta nas demais.</strong><br><br>
+      <strong style="color:var(--accent)">🎯 Estratégia 2026:</strong> Auditoria + Contabilidade = núcleo duro. Não negligencie Legislação Tributária RS (ICMS gaúcho tem peculiaridades) e Reforma Tributária EC 132/2023.
+    </div>
+    <div style="font-family:var(--font-head);font-size:13px;letter-spacing:2px;color:var(--muted);margin-bottom:8px;margin-top:4px">📊 MATÉRIAS POR PESO</div>
+    <div id="subjects-list"></div>
+  </div>
+
+  <!-- ROUTINE -->
+  <div class="panel" id="panel-routine">
+    <div class="card">
+      <div class="card-title">🌆 ROTINA DIÁRIA — 3H POR DIA</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Estruturada para quem começa às 17h com 3 horas disponíveis.</p>
+      <div id="routine-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📅 CRONOGRAMA SEMANAL</div>
+      <div id="weekly-schedule"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🏛️ PRINCÍPIOS DO ESTUDO</div>
+      <div style="font-size:13px;line-height:1.9;color:var(--muted)">
+        <div>🟡 <strong style="color:var(--text)">Auditoria + Contabilidade todos os dias</strong> — é o núcleo</div>
+        <div>🟡 <strong style="color:var(--text)">Resolva questões Cebraspe</strong> — o estilo da banca é diferente</div>
+        <div>🟡 <strong style="color:var(--text)">Legislação RS com atenção</strong> — ICMS gaúcho é específico</div>
+        <div>🟡 <strong style="color:var(--text)">Reforma Tributária EC 132</strong> — vai cair em 2026</div>
+        <div>🔴 <strong style="color:var(--text)">Não zere nenhuma disciplina</strong> — eliminação automática</div>
+        <div>🔴 <strong style="color:var(--text)">Não ignore Economia</strong> — 25 questões no bloco II</div>
+        <div>🔴 <strong style="color:var(--text)">Sem releitura passiva</strong> — use flashcards e questões</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPS -->
+  <div class="panel" id="panel-apps">
+    <div class="card">
+      <div class="card-title">📱 STACK DE APPS — SEFAZ-RS</div>
+      <div id="apps-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-title">+ NOVA MISSÃO</div>
+    <input class="modal-input" type="text" id="modal-task" placeholder="Ex: Resolver 20 questões de Auditoria">
+    <select class="modal-input" id="modal-subj">
+      <option value="Estudo">Estudo Geral</option>
+      <option value="Auditoria">Auditoria Fiscal/Contábil</option>
+      <option value="Contabilidade Geral">Contabilidade Geral</option>
+      <option value="Contabilidade Pública">Contabilidade Pública</option>
+      <option value="Língua Portuguesa">Língua Portuguesa</option>
+      <option value="Economia">Economia</option>
+      <option value="Direito Tributário">Direito Tributário</option>
+      <option value="Legislação RS">Legislação Tributária RS</option>
+      <option value="Questões">Questões Cebraspe</option>
+    </select>
+    <div class="modal-row">
+      <button class="modal-btn modal-cancel" onclick="closeModal()">CANCELAR</button>
+      <button class="modal-btn modal-confirm" onclick="addCustomMission()">ADICIONAR</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let state = JSON.parse(localStorage.getItem('sefazrs_andre') || JSON.stringify({
+  xp:0, level:1, totalPomos:0, studiedDays:[], sessions:{}, missions:{}, subjectProgress:{}, bestStreak:0
+}));
+function save() { localStorage.setItem('sefazrs_andre', JSON.stringify(state)); }
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+const SUBJECTS = [
+  { id:'audit', name:'Auditoria Fiscal/Contábil', icon:'🔍', weight:'34q — BLOCO I+II (maior peso!)', priority:'high', color:'#e84040',
+    topics:['Conceito e tipos de auditoria (conformidade, financeira, operacional)','Planejamento de auditoria e gestão de riscos','Materialidade, risco inerente, de controle e de detecção','Técnicas e procedimentos de auditoria','Evidências e achados de auditoria','Papéis de trabalho e relatório de auditoria','Auditoria governamental — TCE, TCU','Controle interno e COSO','Auditoria de TI e dados','Fraudes e irregularidades'] },
+  { id:'contgeral', name:'Contabilidade Geral + Custos', icon:'📊', weight:'28q — BLOCO I', priority:'high', color:'#e84040',
+    topics:['Equação patrimonial e balanço patrimonial','DRE, DLPA, DVA, DFC','Regime de competência vs. caixa','Depreciação, amortização, exaustão','Estoques: PEPS, UEPS, Média Ponderada','Contabilidade de Custos: diretos e indiretos','Custo por absorção e custeio variável','Análise de balanços: liquidez, endividamento, rentabilidade','Análise horizontal e vertical','Consolidação de balanços'] },
+  { id:'contpub', name:'Contabilidade Pública', icon:'🏛️', weight:'28q — BLOCO II', priority:'high', color:'#e84040',
+    topics:['MCASP — Manual de Contabilidade Aplicada ao Setor Público','Orçamento público: LOA, LDO, PPA','Receitas e despesas públicas','Restos a pagar e suprimento de fundos','Dívida ativa e dívida pública','SIAFI e sistemas de controle','Prestação de contas e transparência','Lei de Responsabilidade Fiscal','Regime próprio de previdência','IPSAS — normas internacionais'] },
+  { id:'port', name:'Língua Portuguesa', icon:'📝', weight:'19q — BLOCO I', priority:'high', color:'#f0a500',
+    topics:['Interpretação de textos (foco Cebraspe)','Coesão e coerência textual','Tipologia e gêneros textuais','Morfologia: classes de palavras','Sintaxe: concordância verbal e nominal','Regência verbal e nominal','Crase, pontuação e ortografia','Semântica: ambiguidade, sinonímia','Figuras de linguagem','Redação oficial'] },
+  { id:'econ', name:'Economia', icon:'📈', weight:'25q — BLOCO II', priority:'high', color:'#f0a500',
+    topics:['Microeconomia: oferta, demanda, equilíbrio','Elasticidade preço e renda','Estruturas de mercado: concorrência, monopólio, oligopólio','Macroeconomia: PIB, inflação, desemprego','Política monetária e fiscal','Balanço de pagamentos','Taxa de câmbio','Sistema financeiro nacional','Economia do setor público','Teoria dos jogos (noções)'] },
+  { id:'dirtrib', name:'Direito Tributário', icon:'⚖️', weight:'7q + Legislação RS — ESSENCIAL', priority:'high', color:'#f0a500',
+    topics:['Conceito e tipos de tributos','Competência tributária','Princípios constitucionais tributários','Obrigação, fato gerador, crédito tributário','Lançamento e suas modalidades','Suspensão, extinção e exclusão do crédito','Responsabilidade tributária','Administração tributária','CTN — Código Tributário Nacional','Reforma Tributária: EC 132/2023 e LC 214/2025 (IVA Dual)'] },
+  { id:'legrs', name:'Legislação Tributária RS', icon:'🗺️', weight:'Específica do cargo — DIFERENCIAL', priority:'high', color:'#f0a500',
+    topics:['ICMS-RS: Lei Estadual nº 8.820/89 e RICMS','Fato gerador, base de cálculo e alíquotas do ICMS','Substituição tributária no RS','Simples Nacional e Microempreendedor Individual','IPVA-RS: Lei nº 8.115/85','ITCD-RS: Lei nº 8.821/89','Taxas estaduais','Fiscalização e processo administrativo fiscal do RS','Domicílio tributário','Dívida ativa estadual'] },
+  { id:'dircost', name:'Direito Constitucional', icon:'📜', weight:'10q — BLOCO II', priority:'mid', color:'#0099ff',
+    topics:['Princípios fundamentais (arts. 1º ao 4º CF)','Direitos e garantias fundamentais (art. 5º)','Organização do Estado: União, Estados, Municípios','Poder Legislativo, Executivo e Judiciário','Controle de constitucionalidade','Ordem econômica e financeira','Sistema tributário nacional na CF (arts. 145-162)','Repartição de receitas tributárias','Administração pública: art. 37','Estado do RS: Constituição Estadual'] },
+  { id:'diradm', name:'Direito Administrativo', icon:'📂', weight:'8q — BLOCO II', priority:'mid', color:'#0099ff',
+    topics:['Princípios da Administração Pública','Atos administrativos','Poderes administrativos','Licitações e contratos (Lei 14.133/21)','Servidores públicos','Responsabilidade civil do Estado','Processo administrativo','Improbidade administrativa','Controle da Administração','Agências reguladoras'] },
+  { id:'matfin', name:'Matemática Financeira', icon:'🧮', weight:'13q — BLOCO II', priority:'mid', color:'#0099ff',
+    topics:['Juros simples e compostos','Taxa nominal, efetiva e equivalente','Desconto simples e composto','Sistemas de amortização: SAC, Price, SAM','Fluxo de caixa e VPL','Taxa Interna de Retorno (TIR)','Séries uniformes e gradientes','Capitalização contínua','Análise de investimentos','Porcentagem e razão'] },
+  { id:'ti', name:'Tecnologia da Informação', icon:'💻', weight:'Previsto 2026', priority:'mid', color:'#9b59b6',
+    topics:['Banco de dados: SQL, modelagem relacional','Segurança da informação: LGPD, criptografia','Auditoria de sistemas e COBIT','Redes: TCP/IP, protocolos, firewall','Business Intelligence e análise de dados','Planilhas avançadas e automação','ERP e sistemas de gestão pública','Transformação digital no setor público','Cloud computing (noções)','Inteligência artificial na fiscalização'] },
+  { id:'reform', name:'Reforma Tributária EC 132', icon:'🔄', weight:'NOVO — certamente cobrado em 2026', priority:'high', color:'#e84040',
+    topics:['EC 132/2023: fundamentos da reforma','IVA Dual: IBS (estados) e CBS (federal)','IS — Imposto Seletivo','Extinção do PIS/Cofins/IPI/ICMS/ISS (transição)','Comitê Gestor do IBS','LC 214/2025: regulamentação','Período de transição: 2026–2033','Cashback para cidadãos de baixa renda','Impacto na legislação estadual do RS','Cesta básica: isenções e alíquotas'] },
+];
+
+const DEFAULT_MISSIONS = [
+  { id:'anki', name:'Revisar flashcards do Anki (10 min)', subject:'Revisão', xp:20 },
+  { id:'pomo1', name:'Completar 2 blocos de 25 min de estudo', subject:'Estudo', xp:40 },
+  { id:'pomo2', name:'Completar 3º bloco de 25 min de estudo', subject:'Estudo', xp:30 },
+  { id:'quest', name:'Resolver 20 questões Cebraspe comentadas', subject:'Questões', xp:50 },
+  { id:'video', name:'Assistir aula do curso (1 módulo)', subject:'Aula', xp:40 },
+  { id:'legrs', name:'Ler 15 min de legislação tributária RS', subject:'Legislação', xp:30 },
+  { id:'rev', name:'Criar flashcards da aula de hoje', subject:'Revisão', xp:25 },
+  { id:'familia', name:'Tempo de qualidade com a família depois', subject:'Família', xp:15 },
+];
+
+const ROUTINE = [
+  { time:'09:00', title:'⏱️ Início — Anki + aquecimento', desc:'10 min revisando flashcards do dia anterior. Celular em modo avião e definição da matéria do primeiro bloco.', color:'#f0a500' },
+
+  { time:'09:10', title:'🔥 BLOCO 1 — Auditoria / Contabilidade', desc:'Matéria mais pesada do dia. Estudo profundo com foco total utilizando timer de 50 minutos.', color:'#0099ff' },
+
+  { time:'10:00', title:'☕ Pausa estratégica (10 min)', desc:'Água, alongamento e descanso mental rápido. Não pegue o celular.', color:'#4e6080' },
+
+  { time:'10:10', title:'🔥 BLOCO 2 — Segunda matéria do dia', desc:'Economia, Português, Tributário ou matéria prevista no cronograma semanal.', color:'#0099ff' },
+
+  { time:'11:00', title:'☕ Pausa curta (10 min)', desc:'Respiração, café e recuperação mental antes do último bloco da manhã.', color:'#4e6080' },
+
+  { time:'11:10', title:'🔥 BLOCO 3 — Questões Cebraspe + Revisão', desc:'Resolução de questões comentadas e revisão ativa dos erros.', color:'#f0a500' },
+
+  { time:'12:00', title:'🍽️ Intervalo grande — almoço e descanso', desc:'Desligar a mente do estudo. Recuperação física e mental para manter alta performance à tarde.', color:'#00d68f' },
+
+  { time:'14:00', title:'🔥 BLOCO 4 — Legislação Tributária RS', desc:'Leitura ativa do ICMS-RS, legislação estadual e pontos específicos do edital.', color:'#9b59b6' },
+
+  { time:'15:00', title:'☕ Pausa rápida (10 min)', desc:'Pausa curta para manter a concentração no último bloco.', color:'#4e6080' },
+
+  { time:'15:10', title:'🔥 BLOCO 5 — Flashcards + Fixação', desc:'Criar flashcards Anki, revisar resumos e consolidar o conteúdo estudado no dia.', color:'#f0a500' },
+
+  { time:'16:00', title:'✅ Encerramento + Planejamento', desc:'Registrar progresso, marcar missões no app e definir matérias do próximo dia.', color:'#00d68f' },
+];
+
+const WEEKLY = [
+  { day:'Segunda', subject:'🔍 Auditoria Fiscal + 📊 Contabilidade Geral', tip:'17h–20h • Início da semana com o núcleo duro — máxima energia e foco' },
+  { day:'Terça', subject:'🏛️ Contabilidade Pública + 📈 Economia (parte 1)', tip:'17h–20h • Dois blocos pesados — intercale para não saturar' },
+  { day:'Quarta', subject:'📝 Língua Portuguesa + 🔄 Reforma Tributária', tip:'17h–20h • Português exige interpretação — use provas antigas do Cebraspe' },
+  { day:'Quinta', subject:'⚖️ Dir. Tributário + 🗺️ Legislação RS', tip:'17h–20h • O diferencial do concurso estadual — estude o RICMS com atenção' },
+  { day:'Sexta', subject:'📈 Economia (parte 2) + 🧮 Matemática Financeira', tip:'17h–19h30 • + Simulado de 30 questões Cebraspe cronometrado' },
+  { day:'Sábado', subject:'🎯 Simulado Geral (Blocos I e II) + Revisão', tip:'Manhã livre — use 3h para simular a prova real. Corrija tudo com gabarito comentado' },
+  { day:'Domingo', subject:'📜 Dir. Constitucional + 📂 Dir. Administrativo + 💻 TI', tip:'17h–19h30 • Matérias complementares — ritmo mais leve para recarregar' },
+];
+
+const APPS = [
+  { name:'Anki', icon:'🃏', desc:'OBRIGATÓRIO. Auditoria e Contabilidade têm muita nomenclatura técnica — flashcards são essenciais. Revise todo dia, 10 minutos antes de começar o estudo.', tag:'essential', tagText:'ESSENCIAL' },
+  { name:'QConcursos / Cebraspe', icon:'❓', desc:'Resolva as provas de 2018 da SEFAZ-RS completas. A banca Cebraspe tem um estilo único de questão — pratique especificamente esse formato para não ser surpreendido.', tag:'essential', tagText:'ESSENCIAL' },
+  { name:'Estratégia Concursos (SEFAZ-RS)', icon:'🎓', desc:'Tem pacote específico SEFAZ-RS Auditor com professores de Auditoria, Contabilidade e Direito Tributário. Use em velocidade 1.5x e crie Anki cards após cada aula.', tag:'essential', tagText:'ESSENCIAL' },
+  { name:'Gran Cursos / Direção Concursos', icon:'📚', desc:'Alternativas ao Estratégia. Busque cursos com foco em SEFAZ estaduais — professores como Silvio Sande (Auditoria) e Fabio Dutra (Português) são referências.', tag:'essential', tagText:'ESSENCIAL' },
+  { name:'Legis RS (legislação estadual)', icon:'🗺️', desc:'Site oficial da Assembleia Legislativa do RS para consultar a lei do ICMS gaúcho, IPVA e ITCD em texto original. Essencial para legislação tributária estadual.', tag:'essential', tagText:'ESSENCIAL' },
+  { name:'Focusmate', icon:'👥', desc:'Body doubling virtual — estuda em vídeo com alguém. Útil nos dias em que o cansaço do serviço militar bate e a procrastinação aparece.', tag:'useful', tagText:'RECOMENDADO' },
+  { name:'Google Alarmes', icon:'⏰', desc:'Configure alarme fixo para 17h todo dia. Disciplina de militar aplicada ao estudo — o alarme é a ordem do dia.', tag:'useful', tagText:'RECOMENDADO' },
+  { name:'Excel / Google Sheets', icon:'📊', desc:'Para praticar Matemática Financeira e análise de balanços de forma prática. Montar planilhas de amortização e VPL ajuda a fixar melhor que só teoria.', tag:'useful', tagText:'RECOMENDADO' },
+  { name:'Notion', icon:'📓', desc:'Para organizar resumos de legislação tributária RS, mapas mentais de Auditoria e controle do edital. Ótimo para quem tem perfil organizado.', tag:'optional', tagText:'OPCIONAL' },
+];
+
+// ===== POMODORO =====
+let timer=null, remaining=25*60, totalTime=25*60, running=false, currentMode='work25', sessionPomos=0;
+const MODES = {
+  work25:{sec:25*60, label:'FOCO 25MIN', stroke:'var(--accent)'},
+  work50:{sec:50*60, label:'FOCO 50MIN', stroke:'var(--accent)'},
+  short:{sec:5*60, label:'PAUSA CURTA', stroke:'var(--green)'},
+  long:{sec:15*60, label:'PAUSA LONGA', stroke:'var(--blue)'}
+};
+
+function setMode(mode,el) {
+  if(running) return;
+  currentMode=mode;
+  const cfg=MODES[mode];
+  totalTime=cfg.sec; remaining=cfg.sec;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('ring-circle').style.stroke=cfg.stroke;
+  document.getElementById('pomo-label').textContent=cfg.label;
+  updateTimerDisplay(); updateRing();
+}
+
+function updateTimerDisplay() {
+  const m=Math.floor(remaining/60).toString().padStart(2,'0');
+  const s=(remaining%60).toString().padStart(2,'0');
+  document.getElementById('pomo-time').textContent=`${m}:${s}`;
+}
+
+function updateRing() {
+  const offset=552.9*(1-remaining/totalTime);
+  document.getElementById('ring-circle').style.strokeDashoffset=offset;
+}
+
+function toggleTimer() {
+  if(running){clearInterval(timer);running=false;document.getElementById('start-btn').textContent='CONTINUAR';}
+  else{running=true;document.getElementById('start-btn').textContent='PAUSAR';timer=setInterval(()=>{remaining--;updateTimerDisplay();updateRing();if(remaining<=0){clearInterval(timer);running=false;onTimerDone();}},1000);}
+}
+
+function resetTimer(){clearInterval(timer);running=false;remaining=totalTime;document.getElementById('start-btn').textContent='INICIAR';updateTimerDisplay();updateRing();}
+function skipTimer(){clearInterval(timer);running=false;remaining=0;updateTimerDisplay();updateRing();onTimerDone();}
+
+function onTimerDone(){
+  document.getElementById('start-btn').textContent='INICIAR';
+  if(currentMode==='work25'||currentMode==='work50'){
+    sessionPomos++;state.totalPomos++;addXP(35,'🍅 Bloco concluído!');logSession();updatePomoDots();save();updateHeader();showToast('✅ Bloco concluído! +35 XP');
+    if(Notification.permission==='granted') new Notification('✅ BLOCO CONCLUÍDO!',{body:'Pausa merecida! Descanse antes do próximo.'});
+  } else { showToast('☕ Pausa finalizada! Próximo bloco!'); }
+}
+
+function updatePomoDots(){
+  const dots=document.querySelectorAll('.pomo-dot');
+  dots.forEach((d,i)=>{d.classList.remove('done','current');if(i<sessionPomos%4)d.classList.add('done');else if(i===sessionPomos%4)d.classList.add('current');});
+}
+
+function logSession(){
+  const subj=document.getElementById('current-subject').value||'Estudo Geral';
+  const key=todayKey();
+  if(!state.sessions[key])state.sessions[key]=[];
+  const now=new Date();
+  state.sessions[key].push({subject:subj,time:`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`,mode:currentMode});
+  renderSessions();
+}
+
+function renderSessions(){
+  const key=todayKey();
+  const sessions=state.sessions[key]||[];
+  const el=document.getElementById('session-log');
+  if(!sessions.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:12px">Nenhuma sessão ainda. Bora! 💪</div>';return;}
+  el.innerHTML=sessions.slice().reverse().map(s=>`<div class="log-item"><div>📘 <strong>${s.subject}</strong></div><div class="log-time">${s.time} • ${MODES[s.mode]?.label||s.mode}</div></div>`).join('');
+}
+
+// ===== MISSIONS =====
+function getMissionsForToday(){
+  const key=todayKey();
+  if(!state.missions[key]){state.missions[key]=DEFAULT_MISSIONS.map(m=>({...m,done:false}));save();}
+  return state.missions[key];
+}
+
+function renderMissions(){
+  const missions=getMissionsForToday();
+  const done=missions.filter(m=>m.done).length;
+  const total=missions.length;
+  document.getElementById('mission-date').textContent=formatDate(new Date());
+  document.getElementById('mission-progress-bar').style.width=`${(done/total)*100}%`;
+  document.getElementById('mission-list').innerHTML=missions.map((m,i)=>`
+    <div class="mission-item ${m.done?'done':''}" onclick="toggleMission(${i})">
+      <div class="mission-check">${m.done?'✓':''}</div>
+      <div class="mission-body"><div class="mission-name">${m.name}</div><div class="mission-sub">${m.subject}</div></div>
+      <div class="mission-xp">+${m.xp}</div>
+    </div>`).join('');
+  const fc=document.getElementById('family-card');
+  const ft=document.getElementById('family-text');
+  if(done>=total){
+    fc.style.borderColor='var(--green)';fc.style.background='rgba(0,214,143,0.06)';
+    ft.style.color='var(--green)';ft.innerHTML='<strong>Missões concluídas!</strong><br>🎉 Tempo em família totalmente merecido, André!';
+  } else {
+    fc.style.borderColor='var(--border)';fc.style.background='';
+    ft.style.color='var(--muted)';ft.innerHTML=`Complete todas as missões para liberar o tempo em família! (${total-done} restantes)`;
+  }
+}
+
+function toggleMission(i){
+  const key=todayKey();const m=state.missions[key][i];
+  if(!m.done){m.done=true;addXP(m.xp,`✅ ${m.name}`);showToast(`✅ +${m.xp} XP`);}
+  else{m.done=false;state.xp=Math.max(0,state.xp-m.xp);updateLevel();}
+  save();renderMissions();updateHeader();
+}
+
+function openAddMission(){document.getElementById('modal-overlay').classList.add('open');document.getElementById('modal-task').focus();}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+function closeModalOutside(e){if(e.target.id==='modal-overlay')closeModal();}
+function addCustomMission(){
+  const name=document.getElementById('modal-task').value.trim();
+  const subj=document.getElementById('modal-subj').value;
+  if(!name)return;
+  const key=todayKey();
+  state.missions[key].push({id:'c'+Date.now(),name,subject:subj,xp:25,done:false});
+  save();renderMissions();closeModal();document.getElementById('modal-task').value='';
+}
+
+// ===== CALENDAR =====
+let calYear,calMonth;
+function initCalendar(){const now=new Date();calYear=now.getFullYear();calMonth=now.getMonth();renderCalendar();}
+function changeMonth(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function renderCalendar(){
+  const months=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  document.getElementById('cal-month-label').textContent=`${months[calMonth]} ${calYear}`;
+  const first=new Date(calYear,calMonth,1).getDay();
+  const days=new Date(calYear,calMonth+1,0).getDate();
+  const today=new Date();const todayStr=todayKey();
+  let html='';
+  for(let i=0;i<first;i++)html+='<div class="cal-cell empty"></div>';
+  for(let d=1;d<=days;d++){
+    const key=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=key===todayStr;
+    const isStudied=state.studiedDays.includes(key);
+    const isFuture=new Date(calYear,calMonth,d)>today&&!isToday;
+    let cls='cal-cell';
+    if(isToday)cls+=' today';if(isStudied)cls+=' studied';if(isFuture)cls+=' future';
+    html+=`<div class="${cls}" onclick="toggleStudiedDay('${key}')">${d}</div>`;
+  }
+  document.getElementById('cal-grid').innerHTML=html;
+  updateStreakDisplay();
+}
+
+function toggleStudiedDay(key){
+  const today=todayKey();
+  if(new Date(key)>new Date(today))return;
+  const idx=state.studiedDays.indexOf(key);
+  if(idx===-1){state.studiedDays.push(key);if(key!==today)addXP(10,'📅 Dia marcado');}
+  else state.studiedDays.splice(idx,1);
+  save();renderCalendar();updateHeader();
+}
+
+function markStudiedToday(){
+  const key=todayKey();
+  if(!state.studiedDays.includes(key)){state.studiedDays.push(key);addXP(50,'✅ Estudei hoje!');showToast('🔥 +50 XP — Sequência mantida!');save();renderCalendar();updateHeader();}
+  else showToast('✅ Hoje já marcado!');
+}
+
+function updateStreakDisplay(){
+  let streak=0;const today=new Date();today.setHours(0,0,0,0);
+  let check=new Date(today);
+  while(true){
+    const key=`${check.getFullYear()}-${String(check.getMonth()+1).padStart(2,'0')}-${String(check.getDate()).padStart(2,'0')}`;
+    if(state.studiedDays.includes(key)){streak++;check.setDate(check.getDate()-1);}else break;
+  }
+  let best=state.bestStreak||0;
+  if(streak>best){best=streak;state.bestStreak=best;save();}
+  document.getElementById('cal-streak').textContent=streak;
+  document.getElementById('cal-best').textContent=best;
+  document.getElementById('cal-total').textContent=state.studiedDays.length;
+  document.getElementById('hdr-streak').textContent=streak+'🔥';
+  document.getElementById('hdr-days').textContent=state.studiedDays.length;
+}
+
+// ===== PLAN =====
+
+function renderPlan(){
+  document.getElementById('subjects-list').innerHTML=SUBJECTS.map(s=>{
+
+    if(!state.subjectTopics) state.subjectTopics={};
+
+    if(!state.subjectTopics[s.id]){
+      state.subjectTopics[s.id]=s.topics.map(()=>false);
+    }
+
+    const checked=state.subjectTopics[s.id].filter(Boolean).length;
+    const total=s.topics.length;
+    const prog=Math.round((checked/total)*100);
+
+    state.subjectProgress[s.id]=prog;
+
+    const pctLabel=s.priority==='high'?'ALTA PRIORIDADE':'MÉDIA';
+    const pctClass=s.priority==='high'?'high':'mid';
+
+    return `<div class="subject-card" onclick="toggleTopics('${s.id}')">
+
+      <div class="subject-header">
+        <div class="subject-left">
+          <span class="subject-icon">${s.icon}</span>
+
+          <div>
+            <div class="subject-name">${s.name}</div>
+            <div class="subject-sub">${s.weight}</div>
+          </div>
+        </div>
+
+        <div class="subject-right">
+          <div class="subject-pct ${pctClass}">${prog}%</div>
+        </div>
+      </div>
+
+      <div class="subject-progress">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px">
+          <span>Progresso automático</span>
+          <span>${checked}/${total}</span>
+        </div>
+
+        <div class="subj-bar-wrap">
+          <div class="subj-bar" style="width:${prog}%;background:${s.color}"></div>
+        </div>
+      </div>
+
+      <div class="subject-topics" id="topics-${s.id}">
+
+        ${s.topics.map((t,i)=>`
+          <div class="topic-item" style="align-items:flex-start">
+
+            <input
+              type="checkbox"
+              ${state.subjectTopics[s.id][i] ? 'checked' : ''}
+              onclick="event.stopPropagation();toggleTopicProgress('${s.id}',${i})"
+              style="margin-top:3px"
+            >
+
+            <div>${t}</div>
+
+          </div>
+        `).join('')}
+
+      </div>
+
+    </div>`;
+
+  }).join('');
+
+  save();
+}
+
+function toggleTopicProgress(subjectId,index){
+  state.subjectTopics[subjectId][index]=!state.subjectTopics[subjectId][index];
+  save();
+  renderPlan();
+}
+
+function toggleTopics(id){document.getElementById('topics-'+id).classList.toggle('open');}
+function updateSubjectProgress(id,val){state.subjectProgress[id]=parseInt(val);document.getElementById('prog-val-'+id).textContent=val+'%';save();}
+
+// ===== ROUTINE =====
+function renderRoutine(){
+  document.getElementById('routine-list').innerHTML=ROUTINE.map(r=>`
+    <div class="routine-block">
+      <div class="routine-time">${r.time}</div>
+      <div class="routine-dot" style="background:${r.color}"></div>
+      <div class="routine-body"><div class="routine-title">${r.title}</div><div class="routine-desc">${r.desc}</div></div>
+    </div>`).join('');
+  document.getElementById('weekly-schedule').innerHTML=WEEKLY.map(w=>`
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="font-family:var(--font-head);font-size:14px;color:var(--accent);min-width:72px">${w.day}</div>
+      <div><div style="font-weight:600;font-size:14px">${w.subject}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${w.tip}</div></div>
+    </div>`).join('');
+}
+
+// ===== APPS =====
+function renderApps(){
+  document.getElementById('apps-list').innerHTML=APPS.map(a=>`
+    <div class="app-item">
+      <div class="app-logo">${a.icon}</div>
+      <div class="app-body"><div class="app-name">${a.name}</div><div class="app-desc">${a.desc}</div><div class="app-tag tag-${a.tag}">${a.tagText}</div></div>
+    </div>`).join('');
+}
+
+// ===== XP & LEVEL =====
+function addXP(amount){state.xp+=amount;updateLevel();}
+function updateLevel(){const lvl=Math.floor(state.xp/300)+1;state.level=lvl;document.getElementById('level-display').textContent=lvl;const xpInLevel=state.xp%300;document.getElementById('xp-bar').style.width=`${(xpInLevel/300)*100}%`;}
+function updateHeader(){document.getElementById('hdr-xp').textContent=state.xp;document.getElementById('hdr-pomos').textContent=state.totalPomos;document.getElementById('level-display').textContent=state.level;updateLevel();}
+
+// ===== TABS =====
+function switchTab(name,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');el.classList.add('active');
+}
+
+// ===== UTILS =====
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function formatDate(d){const days=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];const months=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;}
+
+if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+
+function init(){updateHeader();renderSessions();renderMissions();initCalendar();renderPlan();renderRoutine();renderApps();updateTimerDisplay();updateRing();}
+init();
+</script>
+</body>
+</html>
